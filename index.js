@@ -1,7 +1,7 @@
-const { Engine, Render, Runner, World, Bodies } = Matter;
+const { Engine, Render, Runner, World, Bodies, Body } = Matter;
 
 //config
-const cells = 8;
+const cells = 10;
 const width = 600;
 const height = 600;
 
@@ -210,3 +210,26 @@ const ball = Bodies.circle(
 );
 
 World.add(world, ball);
+
+//keypress for controls
+
+document.addEventListener("keydown", event => {
+	//velocity of ball
+	const { x, y } = ball.velocity;
+	//up
+	if (event.keyCode === 87) {
+		Body.setVelocity(ball, { x, y: y - 5 });
+	}
+	//right
+	if (event.keyCode === 68) {
+		Body.setVelocity(ball, { x: x + 5, y });
+	}
+	//down
+	if (event.keyCode === 83) {
+		Body.setVelocity(ball, { x, y: y + 5 });
+	}
+	//left
+	if (event.keyCode === 65) {
+		Body.setVelocity(ball, { x: x - 5, y });
+	}
+});
