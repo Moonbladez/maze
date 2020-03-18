@@ -1,12 +1,14 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
 //config
-const cells = 5;
-const width = 600;
-const height = 600;
+const cellsHorizontal = 5;
+const cellsVertical = 3;
+const width = window.innerWidth;
+const height = window.innerHeight;
 
 //every rectangle made width
-const unitLength = width / cells;
+const unitLengthX = width / cellsHorizontal;
+const unitLengthY = height / cellsVertical;
 
 const engine = Engine.create();
 //remove gravity from Y
@@ -62,23 +64,23 @@ const shuffle = arr => {
 	return arr;
 };
 
-const grid = Array(cells)
+const grid = Array(cellsVertical)
 	.fill(null)
-	.map(() => Array(cells).fill(false));
+	.map(() => Array(cellsHorizontal).fill(false));
 
 //vertical lines
-const verticals = Array(cells)
+const verticals = Array(cellsVertical)
 	.fill(null)
-	.map(() => Array(cells - 1).fill(false));
+	.map(() => Array(cellsHorizontal - 1).fill(false));
 
 //horizontal lines
-const horizontals = Array(cells - 1)
+const horizontals = Array(cellsVertical - 1)
 	.fill(null)
-	.map(() => Array(cells).fill(false));
+	.map(() => Array(cellsHorizontal).fill(false));
 
 //find random starting spot
-const startRow = Math.floor(Math.random() * cells);
-const startColumn = Math.floor(Math.random() * cells);
+const startRow = Math.floor(Math.random() * cellsVertical);
+const startColumn = Math.floor(Math.random() * cellsHorizontal);
 
 const iterateCells = (row, column) => {
 	//if visited cell at [row, column] then return
@@ -108,9 +110,9 @@ const iterateCells = (row, column) => {
 		//see if neighbour is out of bounds
 		if (
 			nextRow < 0 ||
-			nextRow >= cells ||
+			nextRow >= cellsVertical ||
 			nextColumn < 0 ||
-			nextColumn == cells
+			nextColumn == cellsHorizontal
 		) {
 			continue;
 		}
@@ -150,15 +152,20 @@ horizontals.forEach((row, rowIndex) => {
 		}
 
 		const wall = Bodies.rectangle(
-			columnIndex * unitLength + unitLength / 2,
-			rowIndex * unitLength + unitLength,
+			//center in X
+			columnIndex * unitLengthX + unitLengthX / 2,
+			//center point y
+			rowIndex * unitLengthY + unitLengthY,
 			//how wide
-			unitLength,
+			unitLengthX,
 			//how high
 			5,
 			{
 				label: "wall",
 				isStatic: true,
+				render: {
+					fillStyle: "#2121DE",
+				},
 			}
 		);
 		World.add(world, wall);
@@ -173,15 +180,18 @@ verticals.forEach((row, rowIndex) => {
 		}
 
 		const wall = Bodies.rectangle(
-			columnIndex * unitLength + unitLength,
-			rowIndex * unitLength + unitLength / 2,
+			columnIndex * unitLengthX + unitLengthX,
+			rowIndex * unitLengthY + unitLengthY / 2,
 			//how wide
-			10,
+			5,
 			//how high
-			unitLength,
+			unitLengthY,
 			{
 				label: "wall",
 				isStatic: true,
+				render: {
+					fillStyle: "#2121DE",
+				},
 			}
 		);
 		World.add(world, wall);
@@ -191,30 +201,38 @@ verticals.forEach((row, rowIndex) => {
 //make the winning spot
 const goal = Bodies.rectangle(
 	//x coords
-	width - unitLength / 2,
+	width - unitLengthX / 2,
 	//Y co ords
-	height - unitLength / 2,
+	height - unitLengthY / 2,
 	//height of goal box
-	unitLength * 0.7,
+	unitLengthX * 0.7,
 	//width of goal box
-	unitLength * 0.7,
+	unitLengthY * 0.7,
 	{
 		label: "goal",
 		isStatic: true,
+		render: {
+			fillStyle: "#00FF00",
+		},
 	}
 );
 World.add(world, goal);
 
 //Ball
+//find which measurement is smallest
+const ballRadius = Math.min(unitLengthX, unitLengthY) / 4;
 const ball = Bodies.circle(
 	//X of middle of ball
-	unitLength / 2,
+	unitLengthX / 2,
 	//Y of middle of ball
-	unitLength / 2,
+	unitLengthY / 2,
 	//radius of ball
-	unitLength / 4,
+	ballRadius,
 	{
 		label: "ball",
+		render: {
+			fillStyle: "#FFFF00",
+		},
 	}
 );
 
